@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>
+            Página de La guerra de las galaxias
+        </title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    </head>
+
+    <body style="background-color: black;">
+        <img style="display: block; margin: 0 auto;" src="https://cdn.pixabay.com/photo/2017/08/11/19/22/star-wars-2632459_960_720.jpg">
+        <div class="container">
+            <div style="text-align: center;">
+                <h3 style="color: yellow;">¡Bienvenido a mi página de La guerra de las galaxias!</h3>
+                <button class="btn btn-success" onclick="buscar()">Buscar</button>
+            </div>
+
+            
+
+            <div id="resultados">
+            </div>
+
+            <div style="text-align: right;" id="pieDePagina">
+                <button style="display: none;" id="botonAtras" onclick="anterior()" class="btn btn-warning"> << </button>
+                <button style="display: none;" id="botonAdelante" onclick="siguiente()" class="btn btn-success"> >> </button>
+            </div>
+        </div>
+        
+    </body>
+
+    <script>
+        var siguientePagina = "";
+        var anteriorPagina = "";
+        var URLActualAPI = "";
+
+        function siguiente() {
+            URLActualAPI = siguientePagina;
+            EncontrarGente();
+        }
+
+        function anterior() {
+            URLActualAPI = anteriorPagina;
+            EncontrarGente();
+        }
+
+        function buscar() {
+            URLActualAPI = "https://swapi.dev/api/people";
+            EncontrarGente();
+        }
+
+        function EncontrarGente() {
+            document.getElementById("resultados").innerHTML = "";
+            debugger;
+            var data = undefined;
+            // alert("Haz presionado en el botón. Voy a llamar la API de La guerra de las galaxias");
+            var request = new XMLHttpRequest();
+            request.open('GET', URLActualAPI, true);
+            request.send();
+
+            request.onreadystatechange = function() {
+                if(this.readyState == 4 && this.status == 200) {
+                    debugger;
+                    // document.getElementById("pieDePagina").style.display = "inline";
+                    var datosBrutos = this.response;
+                    datos = JSON.parse(datosBrutos);
+                    mostrarDatosAPI(datos);       
+                }
+            }
+        }
+
+        function mostrarDatosAPI(datos) {
+            // alert("Cantidad de personajes encontrados: " + datos.count);
+            var elemento = document.getElementById("resultados");
+            var cuentaHTML = document.createElement('h4');
+            cuentaHTML.style.color = "yellow";
+            cuentaHTML.innerHTML = "Cantidad de personajes encontrados: " + datos.count;
+            elemento.appendChild(cuentaHTML);
+
+            for (var i = 0; i < datos.results.length; i++) {
+                var itemActual = datos.results[i];
+                var personaje = document.createElement('h5');
+                personaje.style.color = "yellow";
+                var estiloHTML = "<hr/><strong>" + itemActual.name + "</strong><br/>";
+                estiloHTML += "Género: " + itemActual.gender;
+                personaje.innerHTML = estiloHTML;
+
+                document.getElementById("resultados").appendChild(personaje);
+            }
+
+            if (datos.next != null) {
+                debugger;
+                document.getElementById("botonAdelante").style.display = "inline";
+                siguientePagina = datos.next;
+            }
+            else {
+                document.getElementById("botonAdelante").style.display = "none";
+            }
+            if (datos.previous != null) {
+                debugger;
+                document.getElementById("botonAtras").style.display = "inline";
+                anteriorPagina = datos.previous;
+            }
+            else {
+                document.getElementById("botonAtras").style.display = "none";
+            }
+        }
+    </script>
+</html>
